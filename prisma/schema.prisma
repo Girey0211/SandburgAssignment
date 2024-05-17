@@ -27,6 +27,7 @@ enum Category {
 model User {
   user_id  Int     @id @default(autoincrement())
   email    String  @unique
+  id       String  @unique
   password String
   role     Role
   post     Post[]
