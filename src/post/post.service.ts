@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreatePostDto } from './dto/createPost.dto';
 import { Role, User } from '@prisma/client';
@@ -30,7 +30,6 @@ export class PostService {
   }
 
   async getPosts(lastId: number, category: Category, user: User) {
-    const role = user.role
     if(user.role == Role.USER && category == Category.MANAGE)
       throw new NoPermissionException()
 

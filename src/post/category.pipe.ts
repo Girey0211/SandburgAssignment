@@ -1,4 +1,4 @@
-import { ArgumentMetadata, BadRequestException, Injectable, PipeTransform } from '@nestjs/common';
+import { ArgumentMetadata, Injectable, PipeTransform } from '@nestjs/common';
 import { Category } from '@prisma/client';
 import { CategoryNoyFoundException } from './exception/categoryNoyFound.exception';
 

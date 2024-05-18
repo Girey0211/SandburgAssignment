@@ -1,9 +1,9 @@
-import { Body, Controller, Get, Param, ParseEnumPipe, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { PostService } from './post.service';
 import RequestWithUser from '../authentication/requsetWithUser.interface';
 import { CreatePostDto } from './dto/createPost.dto';
 import JwtAuthenticationGuard from '../authentication/guard/JwtAuthenticationGuard';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import Category from './enum/Category';
 import { CategoryPipe } from './category.pipe';
 
@@ -25,6 +25,7 @@ export default class PostController {
   @Get(':category')
   @UseGuards(JwtAuthenticationGuard)
   @ApiOperation({ summary: '게시물 조회 API' })
+  @ApiQuery({ name: 'lastId', required: false, type: Number, description: '마지막 게시물 ID' })
   async getFreePosts(
     @Query() lastId: number,
     @Param('category', CategoryPipe) category: Category,

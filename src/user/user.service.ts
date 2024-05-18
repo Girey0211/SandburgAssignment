@@ -43,7 +43,7 @@ export class UserService {
   }
 
   async deleteUser(userId: number) {
-    const user = await this.prismaService.user.delete({
+    await this.prismaService.user.delete({
       where: {
         userId
       }
