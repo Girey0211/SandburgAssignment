@@ -10,10 +10,10 @@ import {
 import SignupDto from './dto/signup.dto';
 import { AuthenticationService } from './authentication.service';
 import { ApiBody, ApiExtraModels, ApiOperation, ApiTags, getSchemaPath } from '@nestjs/swagger';
-import { LocalAuthenticationGuard } from './localAuthentication.guard';
+import { LocalAuthenticationGuard } from './guard/localAuthentication.guard';
 import RequestWithUser from './requsetWithUser.interface';
 import LogInDto from './dto/login.dto';
-import JwtAuthenticationGuard from './JwtAuthenticationGuard';
+import JwtAuthenticationGuard from './guard/JwtAuthenticationGuard';
 
 @ApiTags('Auth')
 @Controller('authentication')
