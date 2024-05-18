@@ -1,0 +1,14 @@
+enum Category {
+  NOTICE
+  FREE
+  MANAGE
+}
+
+model Post {
+  postId   Int      @id @default(autoincrement())
+  title    String
+  content  String   @db.Text
+  category Category
+  user     User     @relation(fields: [userId], references: [userId])
+  userId   Int
+}

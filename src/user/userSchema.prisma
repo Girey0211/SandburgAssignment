@@ -1,0 +1,13 @@
+enum Role {
+  USER
+  ADMIN
+}
+
+model User {
+  userId   Int     @id @default(autoincrement())
+  email    String  @unique
+  id       String  @unique
+  password String
+  role     Role
+  post     Post[]
+}
