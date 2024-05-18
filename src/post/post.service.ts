@@ -9,7 +9,7 @@ import { NoPermissionException } from './exception/noPermission.exception';
 export class PostService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  createPost(
+  async createPost(
     { title, content, category }: CreatePostDto,
     user: User
   ) {
@@ -26,6 +26,22 @@ export class PostService {
           },
         },
       },
+    })
+  }
+
+  async getPosts(lastId: number, category: Category, user: User) {
+    const role = user.role
+    if(user.role == Role.USER && category == Category.MANAGE)
+      throw new NoPermissionException()
+
+    const limit = 20
+    return this.prismaService.post.findMany({
+      take: limit,
+      skip: lastId == 0 ? 1 : 0,
+      where: {
+        category
+      },
+      ...(lastId == 0 && {cursor: { postId: lastId }})
     })
   }
 }
