@@ -1,7 +1,7 @@
 import {
   Body,
   ClassSerializerInterceptor,
-  Controller, Get,
+  Controller, Delete, Get,
   Post,
   Req,
   UseGuards,
@@ -44,5 +44,13 @@ export class AuthenticationController {
   @ApiOperation({ summary: '유저 조회 API' })
   authenticate(@Req() request: RequestWithUser) {
     return request.user;
+  }
+
+  @UseGuards(JwtAuthenticationGuard)
+  @Delete()
+  @ApiOperation({ summary: '유저 삭제 API' })
+  async deletePost(@Req() request: RequestWithUser) {
+    const { user } = request;
+    return this.authenticationService.deleteUser(user.userId)
   }
 }

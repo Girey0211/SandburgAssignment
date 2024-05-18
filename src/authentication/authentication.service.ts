@@ -70,4 +70,15 @@ export class AuthenticationService {
       throw new PasswordDoesNotMatchException();
     }
   }
+
+  public async deleteUser(userId: number) {
+    try {
+      return await this.usersService.deleteUser(userId);
+    } catch (error) {
+      if (error instanceof UserNotFoundException) {
+        throw new UserNotFoundException();
+      }
+      throw error;
+    }
+  }
 }
