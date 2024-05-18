@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, Req, UseGuards } from '@nestjs/common';
 import { PostService } from './post.service';
 import RequestWithUser from '../authentication/requsetWithUser.interface';
 import { CreatePostDto } from './dto/createPost.dto';
@@ -6,6 +6,8 @@ import JwtAuthenticationGuard from '../authentication/guard/JwtAuthenticationGua
 import { ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import Category from './enum/Category';
 import { CategoryPipe } from './category.pipe';
+import { FindOneParams } from '../util/findOneParam';
+import { UpdatePostDto } from './dto/updatePost.dto';
 
 @ApiTags('Post')
 @Controller('post')
