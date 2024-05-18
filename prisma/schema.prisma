@@ -25,7 +25,7 @@ enum Category {
 }
 
 model User {
-  user_id  Int     @id @default(autoincrement())
+  userId   Int     @id @default(autoincrement())
   email    String  @unique
   id       String  @unique
   password String
@@ -34,10 +34,10 @@ model User {
 }
 
 model Post {
-  post_id  Int      @id @default(autoincrement())
+  postId   Int      @id @default(autoincrement())
   title    String
   content  String   @db.Text
   category Category
-  user     User     @relation(fields: [user_id], references: [user_id])
-  user_id  Int
+  user     User     @relation(fields: [userId], references: [userId])
+  userId   Int
 }

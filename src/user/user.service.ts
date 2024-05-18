@@ -17,10 +17,23 @@ export class UserService {
     });
   }
 
-  async getById(id: string) {
+  async getById(userId: number) {
     const user = await this.prismaService.user.findUnique({
       where: {
-        id,
+        userId,
+      },
+    });
+    if (!user) {
+      throw new UserNotFoundException();
+    }
+
+    return user;
+  }
+
+  async getByEmail(email: string) {
+    const user = await this.prismaService.user.findUnique({
+      where: {
+        email,
       },
     });
     if (!user) {
