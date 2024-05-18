@@ -3,6 +3,13 @@ import { Prisma, PrismaClient } from '@prisma/client';
 
 @Injectable()
 export class PrismaService extends PrismaClient<Prisma.PrismaClientOptions, Prisma.LogLevel> {
+  async onModuleInit() {
+    await this.$connect();
+  }
+
+  async onModuleDestroy() {
+    await this.$disconnect();
+  }
 
   private readonly logger = new Logger(PrismaService.name);
 
