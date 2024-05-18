@@ -1,10 +1,19 @@
-import { Body, ClassSerializerInterceptor, Controller, Post, Req, UseGuards, UseInterceptors } from '@nestjs/common';
+import {
+  Body,
+  ClassSerializerInterceptor,
+  Controller, Get,
+  Post,
+  Req,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import SignupDto from './dto/signup.dto';
 import { AuthenticationService } from './authentication.service';
 import { ApiBody, ApiExtraModels, ApiOperation, ApiTags, getSchemaPath } from '@nestjs/swagger';
 import { LocalAuthenticationGuard } from './localAuthentication.guard';
 import RequestWithUser from './requsetWithUser.interface';
 import LogInDto from './dto/login.dto';
+import JwtAuthenticationGuard from './JwtAuthenticationGuard';
 
 @ApiTags('Auth')
 @Controller('authentication')
@@ -28,5 +37,12 @@ export class AuthenticationController {
   async logIn(@Req() request: RequestWithUser) {
     const { user } = request;
     return this.authenticationService.createJwtToken(user.userId);
+  }
+
+  @UseGuards(JwtAuthenticationGuard)
+  @Get()
+  @ApiOperation({ summary: '유저 조회 API' })
+  authenticate(@Req() request: RequestWithUser) {
+    return request.user;
   }
 }

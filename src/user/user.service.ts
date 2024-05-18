@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { UserAlreadyExist } from '../authentication/exception/userAlreadyExsist.exception';
 import { UserNotFoundException } from './exception/userNotFound.exception';
 import { CreateUserDto } from './dto/createUser.dto';
 
