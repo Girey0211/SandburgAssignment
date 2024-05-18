@@ -53,8 +53,6 @@ export class PostService {
       where: {
         postId: +postId,
       },
-      ...(lastId == 0 && {cursor: { postId: lastId }})
-    })
     });
     if (
       (user.role == Role.USER && post.category != Category.FREE) ||
@@ -67,6 +65,34 @@ export class PostService {
           ...dto,
           postId: undefined,
         },
+        where: {
+          postId: +postId,
+        },
+      });
+    } catch (error) {
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code == PrismaError.RecordDoesNotExist
+      ) {
+        throw new PostNotFoundException(postId);
+      }
+      throw error;
+    }
+  }
+
+  async deletePost(postId: number, user: User) {
+    const post = await this.prismaService.post.findUnique({
+      where: {
+        postId: +postId,
+      },
+    });
+    if (
+      (user.role == Role.USER && post.category != Category.FREE) ||
+      (user.role == Role.USER && user.userId != post.userId)
+    )
+      throw new NoPermissionException();
+    try {
+      return this.prismaService.post.delete({
         where: {
           postId: +postId,
         },

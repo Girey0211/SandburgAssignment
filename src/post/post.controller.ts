@@ -36,4 +36,24 @@ export default class PostController {
     return this.postService.getPosts(lastId, category, request.user)
   }
 
+  @Put(':id')
+  @UseGuards(JwtAuthenticationGuard)
+  @ApiOperation({ summary: '게시물 수정 API' })
+  async updatePost(
+    @Param() { id }: FindOneParams,
+    @Body() dto: UpdatePostDto,
+    @Req() request: RequestWithUser,
+  ) {
+    return this.postService.updatePost(id, dto, request.user)
+  }
+
+  @Delete(':id')
+  @UseGuards(JwtAuthenticationGuard)
+  @ApiOperation({ summary: '게시물 삭제 API' })
+  async deletePost(
+    @Param() { id }: FindOneParams,
+    @Req() request: RequestWithUser,
+  ) {
+    return this.postService.deletePost(id, request.user)
+  }
 }
