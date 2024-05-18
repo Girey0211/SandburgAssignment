@@ -1,8 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Prisma, PrismaClient } from '@prisma/client';
 
 @Injectable()
 export class PrismaService extends PrismaClient<Prisma.PrismaClientOptions, Prisma.LogLevel> {
+
+  private readonly logger = new Logger(PrismaService.name);
+
   constructor() {
     super({
       log: [

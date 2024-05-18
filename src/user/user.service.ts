@@ -1,24 +1,32 @@
 import { Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/createUser.dto';
 import { PrismaService } from '../prisma/prisma.service';
-import { UserAlreadyExist } from './exception/userNotFound.exception';
-import Role from './enum/Role';
+import { UserAlreadyExist } from '../authentication/exception/userAlreadyExsist.exception';
+import { UserNotFoundException } from './exception/userNotFound.exception';
+import { CreateUserDto } from './dto/createUser.dto';
 
 @Injectable()
 export class UserService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async createUser(user: CreateUserDto) {
-    const { id, email, password} = user;
-    const role = Role.USER
-
-    const duplicate = await this.prismaService.user.findMany({
-      where: { OR: [{ id }, { email }] }, // id, nickname 중 중복되는 것 찾기
-    });
-    if (duplicate.length != 0) throw new UserAlreadyExist();
-
+  async create(user: CreateUserDto) {
+    const { id, email, password, role } = user
     return this.prismaService.user.create({
-      data: { id, email, password, role }
+      data: {
+        id, email, password, role
+      }
     });
+  }
+
+  async getById(id: string) {
+    const user = await this.prismaService.user.findUnique({
+      where: {
+        id,
+      },
+    });
+    if (!user) {
+      throw new UserNotFoundException();
+    }
+
+    return user;
   }
 }
