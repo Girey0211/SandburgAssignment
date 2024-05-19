@@ -34,6 +34,8 @@ base url: http://girey-edu/api
 
 가독성을 위해 `schema.prisma`파일을 각 테이블마다 분리해 두었습니다.
 
+![img.png](img.png)
+
 <br>
 
 ## 5. 어드민 계정
