@@ -8,6 +8,7 @@ import { UpdatePostDto } from './dto/updatePost.dto';
 import { PrismaError } from '../util/prismaError';
 import { PostNotFoundException } from './exception/postNotFound.exception';
 import { PostResponseDto } from './dto/postResponse.dto';
+import { PostListResponseDto } from './dto/postListResponse.dto';
 
 @Injectable()
 export class PostService {
@@ -41,7 +42,7 @@ export class PostService {
     };
   }
 
-  async getPosts(lastId: number, category: Category, user: User): Promise<PostResponseDto[]> {
+  async getPosts(lastId: number, category: Category, user: User): Promise<PostListResponseDto[]> {
     if (user.role == Role.USER && category == Category.MANAGE)
       throw new NoPermissionException();
 
@@ -60,16 +61,27 @@ export class PostService {
     return posts.map(post => ({
       postId: post.postId,
       title: post.title,
-      content: post.content,
-      category: post.category,
       userId: post.user.id,
     }));
   }
 
+  async getPostById(postId: number, user: User): Promise<PostResponseDto> {
+    const post = await this.prismaService.post.findUnique({
+      where: { postId: +postId, },
+      include: { user: true, },
+    });
+    if (user.role == Role.USER && post.category == Category.MANAGE)
+      throw new NoPermissionException();
+    return {
+      postId: post.postId,
+      title: post.title,
+      content: post.content,
+      category: post.category,
+      userId: post.user.id,
+    }
+  }
+
   async updatePost(postId: number, dto: UpdatePostDto, user: User): Promise<PostResponseDto> {
-    console.log(postId)
-    console.log(dto)
-    console.log(user)
     const post = await this.prismaService.post.findUnique({
       where: { postId: +postId, },
     });

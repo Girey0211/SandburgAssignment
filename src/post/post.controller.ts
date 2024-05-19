@@ -5,10 +5,10 @@ import { CreatePostDto } from './dto/createPost.dto';
 import JwtAuthenticationGuard from '../authentication/guard/JwtAuthenticationGuard';
 import { ApiOkResponse, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import Category from './enum/Category';
-import { CategoryPipe } from './category.pipe';
 import { FindOneParams } from '../util/findOneParam';
 import { UpdatePostDto } from './dto/updatePost.dto';
 import { PostResponseDto } from './dto/postResponse.dto';
+import { PostListResponseDto } from './dto/postListResponse.dto';
 
 @ApiTags('Post')
 @Controller('post')
@@ -26,19 +26,30 @@ export default class PostController {
     return this.postService.createPost(dto, request.user)
   }
 
-  @Get(':category')
+  @Get('')
   @UseGuards(JwtAuthenticationGuard)
-  @ApiOperation({ summary: '게시물 조회 API' })
+  @ApiOperation({ summary: '카테고리별 게시물 조회 API' })
   @ApiQuery({ name: 'lastId', required: false, type: Number, description: '마지막 게시물 ID' })
-  @ApiOkResponse({ type: [PostResponseDto], description: 'Successful response' })
-  async getFreePosts(
+  @ApiQuery({ name: 'category', required: false, type: String, description: '게시판 카테고리(FREE/NOTICE/MANAGE)'})
+  @ApiOkResponse({ type: [PostListResponseDto], description: 'Successful response' })
+  async getPosts(
     @Query() lastId: number,
-    @Param('category', CategoryPipe) category: Category,
+    @Query() category: Category = Category.FREE,
     @Req() request: RequestWithUser,
-  ):Promise<PostResponseDto[]> {
+  ):Promise<PostListResponseDto[]> {
     return this.postService.getPosts(lastId, category, request.user)
   }
 
+  @Get(':id')
+  @UseGuards(JwtAuthenticationGuard)
+  @ApiOperation({ summary: '게시물 조회 API' })
+  @ApiOkResponse({ type: PostResponseDto, description: 'Successful response' })
+  async getOnePost(
+    @Param() { id }: FindOneParams,
+    @Req() request: RequestWithUser,
+  ):Promise<PostResponseDto> {
+    return this.postService.getPostById(id, request.user)
+  }
   @Put(':id')
   @UseGuards(JwtAuthenticationGuard)
   @ApiOperation({ summary: '게시물 수정 API' })

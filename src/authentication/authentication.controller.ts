@@ -9,7 +9,14 @@ import {
 } from '@nestjs/common';
 import SignupDto from './dto/signup.dto';
 import { AuthenticationService } from './authentication.service';
-import { ApiBody, ApiExtraModels, ApiOkResponse, ApiOperation, ApiTags, getSchemaPath } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiExtraModels,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+  getSchemaPath,
+} from '@nestjs/swagger';
 import { LocalAuthenticationGuard } from './guard/localAuthentication.guard';
 import RequestWithUser from './requsetWithUser.interface';
 import LogInDto from './dto/login.dto';
@@ -33,9 +40,9 @@ export class AuthenticationController {
   @Post('login')
   @UseGuards(LocalAuthenticationGuard)
   @ApiOperation({ summary: '로그인 API' })
-  @ApiOkResponse({ type: TokenDto, description: 'Successful response' })
   @ApiExtraModels(LogInDto)
   @ApiBody({ schema: { $ref: getSchemaPath(LogInDto) } })
+  @ApiOkResponse({ type: TokenDto, description: 'Successful response' })
   async logIn(@Req() request: RequestWithUser): Promise<TokenDto> {
     const { user } = request;
     return new TokenDto(this.authenticationService.createJwtToken(user.userId));
