@@ -1,6 +1,5 @@
 ## 1. 기술 선정
 
----
 ### Prisma
 
 `nestjs`와 함께 자주 쓰이는 `TypeORM`과 `Prisma`중에서 고민하다가 `Prisma`를 사용하였습니다.
@@ -11,14 +10,12 @@
 
 ## 2. 프로젝트 배포
 
----
 선택사항에 프로젝트를 배포하는 것이 있어 `AWS`를 사용하여 배포하였습니다.
 
 <br>
 
 ## 3. API 명세
 
----
 스웨거를 참고해 주시길 바랍니다.<br>
 swagger url: http://girey-edu/api-docs<br>
 base url: http://girey-edu/api
@@ -27,7 +24,6 @@ base url: http://girey-edu/api
 
 ## 4. 데이터베이스 스키마
 
----
 유저와 게시글 정보를 저장하는 테이블 구조입니다.
 
 유저에게는 `Role`, 게시글에는 `Category` 속성을 만들어 권한을 관리하였습니다.
@@ -40,7 +36,6 @@ base url: http://girey-edu/api
 
 ## 5. 어드민 계정
 
----
 아래의 정보로 `login`요청을 보내시면 `ADMIN`권한을 가진 계정으로 로그인하실 수 있습니다.
 ```
 {
