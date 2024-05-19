@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { UserService } from '../../user/user.service';
 import TokenPayload from '../toeknPayload';
 import { ExtractJwt, Strategy } from 'passport-jwt';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -18,7 +19,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: TokenPayload) {
+  async validate(payload: TokenPayload): Promise<User> {
     return await this.userService.getById(payload.userId);
   }
 }

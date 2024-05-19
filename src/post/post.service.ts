@@ -7,6 +7,7 @@ import { NoPermissionException } from './exception/noPermission.exception';
 import { UpdatePostDto } from './dto/updatePost.dto';
 import { PrismaError } from '../util/prismaError';
 import { PostNotFoundException } from './exception/postNotFound.exception';
+import { PostResponseDto } from './dto/postResponse.dto';
 
 @Injectable()
 export class PostService {
@@ -16,10 +17,10 @@ export class PostService {
   async createPost(
     { title, content, category }: CreatePostDto,
     user: User,
-  ) {
+  ): Promise<PostResponseDto> {
     if (user.role == Role.USER && category != Category.FREE)
       throw new NoPermissionException();
-    return this.prismaService.post.create({
+    const post = await this.prismaService.post.create({
       data: {
         title,
         content,
@@ -31,28 +32,46 @@ export class PostService {
         },
       },
     });
+    return {
+      postId: post.postId,
+      title: post.title,
+      content: post.content,
+      category: post.category,
+      userId: user.id,
+    };
   }
 
-  async getPosts(lastId: number, category: Category, user: User) {
+  async getPosts(lastId: number, category: Category, user: User): Promise<PostResponseDto[]> {
     if (user.role == Role.USER && category == Category.MANAGE)
       throw new NoPermissionException();
 
     const limit = 20;
-    return this.prismaService.post.findMany({
+    const posts = await this.prismaService.post.findMany({
       take: limit,
       skip: lastId == 0 ? 1 : 0,
       where: {
         category,
       },
       ...(lastId == 0 && { cursor: { postId: lastId } }),
+      include: {
+        user: true,
+      },
     });
+    return posts.map(post => ({
+      postId: post.postId,
+      title: post.title,
+      content: post.content,
+      category: post.category,
+      userId: post.user.id,
+    }));
   }
 
-  async updatePost(postId: number, dto: UpdatePostDto, user: User) {
+  async updatePost(postId: number, dto: UpdatePostDto, user: User): Promise<PostResponseDto> {
+    console.log(postId)
+    console.log(dto)
+    console.log(user)
     const post = await this.prismaService.post.findUnique({
-      where: {
-        postId: +postId,
-      },
+      where: { postId: +postId, },
     });
     if (
       (user.role == Role.USER && post.category != Category.FREE) ||
@@ -60,7 +79,7 @@ export class PostService {
     )
       throw new NoPermissionException();
     try {
-      return await this.prismaService.post.update({
+      const post = await this.prismaService.post.update({
         data: {
           ...dto,
           postId: undefined,
@@ -68,7 +87,17 @@ export class PostService {
         where: {
           postId: +postId,
         },
+        include: {
+          user: true,
+        },
       });
+      return {
+        postId: post.postId,
+        title: post.title,
+        content: post.content,
+        category: post.category,
+        userId: post.user.id,
+      }
     } catch (error) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&
@@ -80,23 +109,28 @@ export class PostService {
     }
   }
 
-  async deletePost(postId: number, user: User) {
+  async deletePost(postId: number, user: User): Promise<PostResponseDto> {
     const post = await this.prismaService.post.findUnique({
-      where: {
-        postId: +postId,
-      },
+      where: { postId: +postId, },
+      include: { user: true, },
     });
-    if (
-      (user.role == Role.USER && post.category != Category.FREE) ||
-      (user.role == Role.USER && user.userId != post.userId)
-    )
+    if ((user.role == Role.USER && post.category != Category.FREE) ||
+        (user.role == Role.USER && user.userId != post.userId))
       throw new NoPermissionException();
+
     try {
-      return this.prismaService.post.delete({
+      await this.prismaService.post.delete({
         where: {
           postId: +postId,
         },
       });
+      return {
+        postId: post.postId,
+        title: post.title,
+        content: post.content,
+        category: post.category,
+        userId: post.user.id,
+      }
     } catch (error) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&

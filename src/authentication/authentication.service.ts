@@ -4,12 +4,13 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
 import SignupDto from './dto/signup.dto';
-import { Prisma, Role } from '@prisma/client';
+import { Prisma, Role, User } from '@prisma/client';
 import { PrismaError } from '../util/prismaError';
 import { UserAlreadyExist } from './exception/userAlreadyExsist.exception';
 import TokenPayload from './toeknPayload';
 import { PasswordDoesNotMatchException } from './exception/passwordDoesNotMatch.exception';
 import { UserNotFoundException } from '../user/exception/userNotFound.exception';
+import { UserResponseDto } from '../user/dto/userResponse.dto';
 
 @Injectable()
 export class AuthenticationService {
@@ -17,10 +18,9 @@ export class AuthenticationService {
     private readonly usersService: UserService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
-  ) {
-  }
+  ) {}
 
-  public async register(dto: SignupDto) {
+  public async register(dto: SignupDto): Promise<UserResponseDto> {
     const hashedPassword = await bcrypt.hash(dto.password, 10);
     const role = Role.USER;
     try {
@@ -30,8 +30,7 @@ export class AuthenticationService {
         role: role,
       });
       return {
-        ...user,
-        password: undefined,
+        ...user
       };
     } catch (error) {
       if (
@@ -47,12 +46,12 @@ export class AuthenticationService {
     }
   }
 
-  public createJwtToken(userId: number) {
+  public createJwtToken(userId: number): string {
     const payload: TokenPayload = { userId };
     return this.jwtService.sign(payload);
   }
 
-  async getAuthenticatedUser(email: string, plainTextPassword: string) {
+  async getAuthenticatedUser(email: string, plainTextPassword: string): Promise<User> {
     try {
       const user = await this.usersService.getByEmail(email);
       await this.verifyPassword(plainTextPassword, user.password);
@@ -65,15 +64,15 @@ export class AuthenticationService {
     }
   }
 
-  private async verifyPassword(plainTextPassword: any, hashedPassword: any) {
+  private async verifyPassword(plainTextPassword: any, hashedPassword: any): Promise<void> {
     if (await bcrypt.compare(plainTextPassword, hashedPassword) == false) {
       throw new PasswordDoesNotMatchException();
     }
   }
 
-  public async deleteUser(userId: number) {
+  public async deleteUser(userId: number): Promise<UserResponseDto> {
     try {
-      return await this.usersService.deleteUser(userId);
+      return this.usersService.deleteUser(userId);
     } catch (error) {
       if (error instanceof UserNotFoundException) {
         throw new UserNotFoundException();
